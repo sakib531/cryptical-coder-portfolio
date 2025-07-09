@@ -1,78 +1,115 @@
-let typed = new Typed(".typing",{
-    strings:["","Web Designer" , "Web Developer" , "Graphic designer" , "Youtuber"],
-    typeSpeed:100,
-    BackSpeed:60,
-    loop:true
-})
+// Typed.js initialization
+let typed = new Typed(".typing", {
+  strings: ["", "Web Designer", "Web Developer", "Graphic Designer", "YouTuber"],
+  typeSpeed: 100,
+  backSpeed: 60,
+  loop: true
+});
 
+// DOM selections
 const nav = document.querySelector(".nav"),
-navList = nav.querySelectorAll("li"),
-totalNavList = navList.length,
-allSection = document.querySelectorAll(".section"),
-totalSection = allSection.length;
-for(let i=0; i<totalNavList; i++){
-    const a = navList[i].querySelector("a");
-    a.addEventListener("click",function(){
-        removeBackSection();
-        for(let j=0; j<totalNavList; j++){
-            if(navList[j].querySelector("a").classList.contains("active")){
-                allSection[j].classList.add("back-section");
-            }
-            navList[j].querySelector("a").classList.remove("active");
-        }
-        this.classList.add("active")
-        showSection(this);
-        if(window.innerWidth<1200){
-            asideSectionTogglerBtn();
-        }
-    })
+      navList = nav.querySelectorAll("li"),
+      totalNavList = navList.length,
+      allSection = document.querySelectorAll(".section"),
+      totalSection = allSection.length;
+
+// Helper functions
+function removeBackSection() {
+  for (let i = 0; i < totalSection; i++) {
+    allSection[i].classList.remove("back-section");
+  }
 }
 
-function removeBackSection(){
-    for(let i=0; i < totalSection; i++){
-        allSection[i].classList.remove("back-section");
+function addBackSection(index) {
+  allSection[index].classList.add("back-section");
+}
+
+function showSection(element) {
+  const target = element.getAttribute("href").split("#")[1];
+
+  for (let i = 0; i < totalSection; i++) {
+    const section = allSection[i];
+    if (section.classList.contains("active")) {
+      section.classList.remove("active");
+      section.classList.add("back-section");
+    } else {
+      section.classList.remove("back-section");
     }
+  }
+
+  const targetSection = document.querySelector("#" + target);
+  targetSection.classList.add("active");
 }
 
-function showSection(element){
+function updateNav(element) {
+  const target = element.getAttribute("href").split("#")[1];
 
-    for(let i=0; i < totalSection; i++){
-        allSection[i].classList.remove("active");
+  for (let i = 0; i < totalNavList; i++) {
+    const navLink = navList[i].querySelector("a");
+    navLink.classList.remove("active");
+
+    if (navLink.getAttribute("href").split("#")[1] === target) {
+      navLink.classList.add("active");
+    }
+  }
+}
+
+// Nav item click handling
+for (let i = 0; i < totalNavList; i++) {
+  const a = navList[i].querySelector("a");
+  a.addEventListener("click", function () {
+    removeBackSection();
+
+    for (let j = 0; j < totalSection; j++) {
+      if (allSection[j].classList.contains("active")) {
+        addBackSection(j);
+        break;
+      }
     }
 
-    const target = element.getAttribute("href").split("#")[1];
-    document.querySelector("#"+target).classList.add("active")
-}
+    updateNav(this);
+    showSection(this);
 
-function updateNav(element){
-    for(let i=0; i<totalNavList; i++){
-        navList[i].querySelector("a").classList.remove("active");
-        const target = element.getAttribute("href").split("#")[1];
-        if(target === navList[i].querySelector("a").getAttribute("href").split("#")[1]){
-            navList[i].querySelector("a").classList.add("active")
-        }
+    if (window.innerWidth < 1200) {
+      asideSectionTogglerBtn();
     }
+  });
 }
 
+// "Hire Me" button click handling — no menu toggle here
 const hireMeButtons = document.querySelectorAll(".hire-me");
 
 hireMeButtons.forEach(button => {
   button.addEventListener("click", function () {
+    removeBackSection();
+
+    for (let i = 0; i < totalSection; i++) {
+      if (allSection[i].classList.contains("active")) {
+        addBackSection(i);
+        break;
+      }
+    }
+
     showSection(this);
     updateNav(this);
+
+    // ✅ DO NOT toggle aside menu here (prevents popup on click)
   });
 });
 
-
+// Aside toggler (burger icon)
 const navTogglerBtn = document.querySelector(".nav-toggler"),
-aside = document.querySelector(".aside");
-navTogglerBtn.addEventListener("click",() => {
-    asideSectionTogglerBtn();
-})
-function asideSectionTogglerBtn(){
-    aside.classList.toggle("open");
-    navTogglerBtn.classList.toggle("close");
-    for(let i=0;i<totalSection;i++){
-        allSection[i].classList.toggle("open");
-    }
+      aside = document.querySelector(".aside");
+
+navTogglerBtn.addEventListener("click", () => {
+  asideSectionTogglerBtn();
+});
+
+function asideSectionTogglerBtn() {
+  aside.classList.toggle("open");
+  navTogglerBtn.classList.toggle("close");
+
+  for (let i = 0; i < totalSection; i++) {
+    allSection[i].classList.toggle("open");
+  }
 }
